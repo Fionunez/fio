@@ -1,0 +1,83 @@
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import Confetti from "react-confetti";
+import useSound from "use-sound";
+
+export default function ValentineInvite() {
+  const [accepted, setAccepted] = useState(null);
+  const [noHover, setNoHover] = useState(false);
+  const [playClick] = useSound("/click-sound.mp3");
+  const [playPop] = useSound("/pop-sound.mp3");
+  const [playMusic, { stop }] = useSound("/perderme-contigo.mp3", { loop: false });
+
+  useEffect(() => {
+    if (accepted !== null) {
+      playMusic();
+    } else {
+      stop();
+    }
+  }, [accepted, playMusic, stop]);
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-pink-200 to-red-300 p-4 transition-all duration-500">
+      {accepted !== null && <Confetti />}
+      <Card className="max-w-lg w-full p-6 bg-white shadow-xl rounded-2xl text-center">
+        <motion.h1 
+          className="text-3xl font-bold text-red-500"
+          initial={{ scale: 0 }}
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
+        >
+          ¡Feliz San Valentín! 💖
+        </motion.h1>
+        <CardContent className="mt-4">
+          <p className="text-lg text-gray-600">¿Quieres ser mi San Valentín?</p>
+          <div className="flex justify-center gap-4 mt-4">
+            <Button 
+              onClick={() => {
+                setAccepted(true);
+                playPop();
+              }} 
+              className="bg-green-500 hover:bg-green-600"
+            >
+              Sí 💕
+            </Button>
+            <motion.div
+              animate={noHover ? { x: [0, 100, -100, 0] } : {}}
+              transition={{ duration: 0.5 }}
+              onMouseEnter={() => setNoHover(true)}
+              onMouseLeave={() => setNoHover(false)}
+            >
+              <Button 
+                onClick={() => {
+                  setAccepted(false);
+                  playClick();
+                }}
+                className="bg-red-500 hover:bg-red-600"
+              >
+                No 💔
+              </Button>
+            </motion.div>
+          </div>
+          {accepted !== null && (
+            <motion.div 
+              className="mt-6 text-xl font-semibold"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {accepted ? "¡Genial! Tenemos una cita. 💖" : "Sabía que no dirías que no, perrito 🐶"}
+            </motion.div>
+          )}
+        </CardContent>
+        <div className="mt-6 p-4 bg-pink-100 border border-red-300 rounded-xl shadow-md text-lg text-gray-800 font-semibold">
+          <p>📍 <span className="text-red-600">Lugar:</span> Tu casita xd</p>
+          <p>⏰ <span className="text-red-600">Hora:</span> 9pm</p>
+          <p>📅 <span className="text-red-600">Fecha:</span> Finales de febrero o primeras dos semanas de marzo</p>
+          </div>
+      </Card>
+    </div>
+  );
+}
